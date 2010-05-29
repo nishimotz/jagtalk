@@ -10,6 +10,11 @@
 #include <string.h>
 #include "confpara.h"
 
+#ifdef UTF8
+# include <iconv.h>
+# define ICONV_BUFSIZE 4096
+#endif
+
 void restart(int);
 int ByteSwap( void *, int, int);
 
@@ -25,11 +30,27 @@ int RepMsg(char *fmt, ...)
 	va_list ap;
 	int error;
 
+# ifdef UTF8
+        char orig_buf[ICONV_BUFSIZE];
+        char buf[ICONV_BUFSIZE];
+	va_start( ap, fmt );
+	error = vsprintf( orig_buf, fmt, ap );
+	va_end( ap );
+        iconv_t m_iconv = iconv_open("UTF-8", "EUC-JP"); // tocode, fromcode
+        size_t in_size = (size_t)ICONV_BUFSIZE;
+        size_t out_size = (size_t)ICONV_BUFSIZE;
+        char *in = orig_buf;
+        char *out = buf;
+        iconv(m_iconv, &in, &in_size, &out, &out_size);
+        iconv_close(m_iconv);
+        fputs( buf, stdout );
+	fflush( stdout );
+# else
 	va_start( ap, fmt );
 	error = vfprintf( stdout, fmt, ap );
 	fflush( stdout );
 	va_end( ap );
-	
+# endif	
 	/*******¢­for server mode *******/
 	if ( s_mode ) {
 	        char *chrMsg;

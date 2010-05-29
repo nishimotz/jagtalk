@@ -61,6 +61,13 @@ dnl	  [AC_MSG_ERROR([sys/soundcard.h is not found])])
   esac	
 fi
 
+AC_ARG_ENABLE(utf8,
+[  --enable-utf8          Turn on utf8 mode (default=no)],
+[ if test "x$enable_utf8" = "xyes"; then
+     AC_DEFINE(UTF8)
+     enable_utf8=yes
+fi])
+
 dnl Check option
 AC_ARG_ENABLE(threadda,
 [  --enable-threadda       Use Thread DA (default=no)],
@@ -82,9 +89,10 @@ if test "x${ac_cv_c_bigendian}" = "xno"; then
    AC_DEFINE(WORDS_LITTLEENDIAN)
 fi
 		   
+if test $enable_utf8 != yes; then
 dnl check for readline library
-have_readline=no
-AC_CHECK_HEADER(readline/readline.h,
+  have_readline=no
+  AC_CHECK_HEADER(readline/readline.h,
     AC_CHECK_LIB(readline, readline,
 	   have_readline=yes
 	   LIBS="$LIBS -lreadline",
@@ -107,8 +115,8 @@ AC_CHECK_HEADER(readline/readline.h,
 	  )
 	)
     )
-)
-if test $have_readline = yes; then
+  )
+  if test $have_readline = yes; then
     AC_DEFINE(HAVE_READLINE)
     dnl check some definition
     AC_MSG_CHECKING([for readline verion > 4.1])
@@ -117,6 +125,7 @@ if test $have_readline = yes; then
       AC_MSG_RESULT([no - use old func])
       AC_DEFINE(HAVE_READLINE_4_1_OLDER)
     )
+  fi
 fi
 
 dnl check splib

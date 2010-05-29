@@ -4,10 +4,10 @@ VERSION = 1.5
 CC	= gcc
 RM	= /bin/rm
 TAR	= /bin/tar
-GZIP	= /usr/bin/gzip
+GZIP	= /bin/gzip
 
-CFLAGS	= -DPACKAGE_NAME=\"gtalk\" -DPACKAGE_TARNAME=\"gtalk\" -DPACKAGE_VERSION=\"1.5\" -DPACKAGE_STRING=\"gtalk\ 1.5\" -DPACKAGE_BUGREPORT=\"galateatalk-dev@lists.sourceforge.jp\" -DLINUX=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1 -DHAVE_READLINE=1 -DHAVE_READLINE_4_1_OLDER=1 
-LIBS	=  -lm  -lpthread -ldl -lreadline -ltermcap
+CFLAGS	= -DPACKAGE_NAME=\"gtalk\" -DPACKAGE_TARNAME=\"gtalk\" -DPACKAGE_VERSION=\"1.5\" -DPACKAGE_STRING=\"gtalk\ 1.5\" -DPACKAGE_BUGREPORT=\"galateatalk-dev@lists.sourceforge.jp\" -DLINUX=1 -DUTF8=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1
+LIBS	=  -lm  -lpthread -ldl
 TARGET	= gtalk
 
 OBJ	= accent.o \

@@ -34,16 +34,37 @@ int getline( char *buf, int MAX_LENGTH )
  
 #else  /* ~HAVE_READLINE */
 
+# ifdef UTF8
+#  include <iconv.h>
+#  define ICONV_BUFSIZE 4096
+# endif
+
 int getline( char *buf, int MAX_LENGTH )
 {
+# ifdef UTF8
+        char read_buf[ICONV_BUFSIZE];
+	fgets( read_buf, ICONV_BUFSIZE, stdin );
+	if( read_buf == NULL) return -1;
+        iconv_t m_iconv = iconv_open("EUC-JP", "UTF-8"); // tocode, fromcode
+        size_t in_size = (size_t)ICONV_BUFSIZE;
+        size_t out_size = (size_t)MAX_LENGTH;
+        char *in = read_buf;
+        char *out = buf;
+        iconv(m_iconv, &in, &in_size, &out, &out_size);
+        iconv_close(m_iconv);
+	int p = strlen( buf ) - 1;
+	if( buf[p] == '\n' )  buf[p] = '\0';
+	return p;
+# else
 	int p;
 
 	fgets( buf, MAX_LENGTH, stdin );
 	if( buf == NULL) return -1;
-	p = strlen( buf ) - 1;
+ 	p = strlen( buf ) - 1;
 	if( buf[p] == '\n' )  buf[p] = '\0';
 
 	return p;
+# endif
 }
 
 #endif /* HAVE_READLINE */
