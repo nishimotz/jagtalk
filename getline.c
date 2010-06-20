@@ -13,7 +13,7 @@
 
 #ifdef HAVE_READLINE
 
-int getline( char *buf, int MAX_LENGTH )
+int g_getline( char *buf, int MAX_LENGTH )
 {
 	char *s;
 	int p;
@@ -39,7 +39,7 @@ int getline( char *buf, int MAX_LENGTH )
 #  define ICONV_BUFSIZE 4096
 # endif
 
-int getline( char *buf, int MAX_LENGTH )
+int g_getline( char *buf, int MAX_LENGTH )
 {
 # ifdef UTF8
         char read_buf[ICONV_BUFSIZE];

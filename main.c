@@ -36,7 +36,7 @@
 char *moduleVersion = "GalateaTalk Ver. 1.5.2 (gtalk-091012)";
 char *protocolVersion = "Protocol Ver. 1.0";
 
-/* synthesis.h ¥°¥í¡¼¥Ğ¥ëÊÑ¿ô¤ÎÄêµÁ */
+/* synthesis.h ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®å®šç¾© */
 MORPH *mphead;
 MORPH *mptail;
 PHONEME *phhead;
@@ -54,14 +54,14 @@ WAVE wave;
 PARAM power;
 PARAM f0;
 PARAM alpha;
-/*******¢­for server mode ********/
+/*******â†“for server mode ********/
 int s_mode = 0;
 int nPort = 10600;
-/********¢¬***********************/
+/********â†‘***********************/
 
-PROS prosBuf;	/* ±¤Î§¥Ç¡¼¥¿¤Î°ì»ş³ÊÇ¼ÍÑ */
+PROS prosBuf;	/* éŸ»å¾‹ãƒ‡ãƒ¼ã‚¿ã®ä¸€æ™‚æ ¼ç´ç”¨ */
 
-/* confpara.h ¥°¥í¡¼¥Ğ¥ëÊÑ¿ô¤ÎÄêµÁ */
+/* confpara.h ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°ã®å®šç¾© */
 char *phlist_file;
 char *chasen_bin;
 char *chasen_dll;
@@ -73,14 +73,14 @@ char *read_number;
 char *read_alphabet;
 char *read_date;
 char *read_time;
-int n_speaker;	/* ÅĞÏ¿¤µ¤ì¤¿ÏÃ¼Ô¿ô */
-int spid;	/* ¸½ºß¤ÎÏÃ¼ÔID */
+int n_speaker;	/* ç™»éŒ²ã•ã‚ŒãŸè©±è€…æ•° */
+int spid;	/* ç¾åœ¨ã®è©±è€…ID */
 FILE *logfp;
 SPEAKER speaker[MAX_SPEAKER];
 char *dic_file;
-char *conf_audiodev = NULL;  /* ¼Â¹Ô»ş¤Ë»ØÄê¤µ¤ì¤ë¥ª¡¼¥Ç¥£¥ª¥Ç¥Ğ¥¤¥¹ */
+char *conf_audiodev = NULL;  /* å®Ÿè¡Œæ™‚ã«æŒ‡å®šã•ã‚Œã‚‹ã‚ªãƒ¼ãƒ‡ã‚£ã‚ªãƒ‡ãƒã‚¤ã‚¹ */
 
-/* hmmsynth.h ¥°¥í¡¼¥Ğ¥ëÊÑ¿ôÄêµÁ */
+/* hmmsynth.h ã‚°ãƒ­ãƒ¼ãƒãƒ«å¤‰æ•°å®šç¾© */
 int nstate;
 int pitchstream;
 int mcepvsize;
@@ -129,8 +129,8 @@ SlotProp prop_Speak_syncinterval;
 /* slots */
 char slot_Run[20];
 char slot_Speak_stat[20];
-char input_text[MAX_TEXT_LEN];  /* ÆşÎÏ¤µ¤ì¤¿¥Æ¥­¥¹¥È(¥¿¥°¤Ä¤­) */
-char spoken_text[MAX_TEXT_LEN]; /* ²»À¼½ĞÎÏ¤µ¤ì¤¿È¯ÏÃ¤Î¥Æ¥­¥¹¥È */
+char input_text[MAX_TEXT_LEN];  /* å…¥åŠ›ã•ã‚ŒãŸãƒ†ã‚­ã‚¹ãƒˆ(ã‚¿ã‚°ã¤ã) */
+char spoken_text[MAX_TEXT_LEN]; /* éŸ³å£°å‡ºåŠ›ã•ã‚ŒãŸç™ºè©±ã®ãƒ†ã‚­ã‚¹ãƒˆ */
 char slot_Log_file[256];
 char slot_Err_file[256];
 char slot_Speech_file[512];
@@ -219,14 +219,14 @@ void modify_power();
 void modify_voice();
 int make_sleep_time(char *, long *);
 void sig_wait_da();
-int getline( char *buf, int MAX_LENGTH );
-/*******¢­for server mode ********/
+int g_getline( char *buf, int MAX_LENGTH );
+/*******â†“for server mode ********/
 void refresh_server ( void );
 int server_init ( int port );
 void server_close_client ( void );
 int server_getline ( char *buf, int buf_size );
 void server_destroy ( void );
-/********¢¬***********************/
+/********â†‘***********************/
 
 extern FILE *fp_err;
 
@@ -253,16 +253,16 @@ void init_slot_prop()
 	prop_Speak_syncinterval = AutoOutput;
 }
 
-/* ½é´ü²½: ¥×¥í¥°¥é¥àµ¯Æ°»ş¤Ë°ìÅÙ¤À¤±¼Â¹Ô */
+/* åˆæœŸåŒ–: ãƒ—ãƒ­ã‚°ãƒ©ãƒ èµ·å‹•æ™‚ã«ä¸€åº¦ã ã‘å®Ÿè¡Œ */
 void initialize()
 {
 	void setRun();
 
-	/*******¢­for server mode *******/
+	/*******â†“for server mode *******/
 	if (s_mode) {
 	        server_init( nPort );
 	}
-	/*******¢¬***********************/
+	/*******â†‘***********************/
 	
 #ifndef WIN32
 	setpgrp();
@@ -305,7 +305,7 @@ void refresh_prosBuf()
 	prosBuf.nPhoneme = prosBuf.nFrame = 0;
 }
 
-/* ½é´ü²½: ¹çÀ®¤ò¹Ô¤¦¤¿¤Ó¤Ë¼Â¹Ô */
+/* åˆæœŸåŒ–: åˆæˆã‚’è¡Œã†ãŸã³ã«å®Ÿè¡Œ */
 void refresh()
 {
 	refresh_text_analysis();
@@ -339,7 +339,7 @@ int slotID( char *slot )
 	return -1;
 }
 
-#define MAX_COMMAND_LEN 8192  /* ÆşÎÏ¥³¥Ş¥ó¥É¤ÎºÇÂçÊ¸»ú¿ô */
+#define MAX_COMMAND_LEN 8192  /* å…¥åŠ›ã‚³ãƒãƒ³ãƒ‰ã®æœ€å¤§æ–‡å­—æ•° */
 static char cline[MAX_COMMAND_LEN];
 
 int read_command( char **args )
@@ -353,7 +353,7 @@ int read_command( char **args )
    		        return 0;
 		}
 	} else {
-	        if( getline( cline, MAX_COMMAND_LEN ) < 0)
+	        if( g_getline( cline, MAX_COMMAND_LEN ) < 0)
 		        setRun( "=", "EXIT" );
 		if( ! strlen( cline) > 0) return 0;
 	}
@@ -554,7 +554,7 @@ void setSpeaker( char *rel, char *val )
 	}
 }
 
-/* ¤½¤Î»ş¤ËÁªÂò¤µ¤ì¤Æ¤¤¤ëÏÃ¼Ô spid ¤Î¦Á¤ò¥»¥Ã¥È¤¹¤ë¡£*/
+/* ãã®æ™‚ã«é¸æŠã•ã‚Œã¦ã„ã‚‹è©±è€… spid ã®Î±ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚*/
 void setAlpha( char *rel, char *val )
 {
 	double a;
@@ -567,7 +567,7 @@ void setAlpha( char *rel, char *val )
 	}
 }
 
-/* ¤½¤Î»ş¤ËÁªÂò¤µ¤ì¤Æ¤¤¤ëÏÃ¼Ô spid ¤Î¥İ¥¹¥È¥Õ¥£¥ë¥¿·¸¿ô¤ò¥»¥Ã¥È¤¹¤ë¡£*/
+/* ãã®æ™‚ã«é¸æŠã•ã‚Œã¦ã„ã‚‹è©±è€… spid ã®ãƒã‚¹ãƒˆãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚*/
 void setPostfilter_coef( char *rel, char *val)
 {
 	double a;
@@ -587,12 +587,12 @@ void setText( char *rel, char *val )
 
 	if( strcmp(rel,"=")==0 )  {
 		refresh();
-		text_analysis( val );	/* ¥Æ¥­¥¹¥È²òÀÏ */
+		text_analysis( val );	/* ãƒ†ã‚­ã‚¹ãƒˆè§£æ */
 		if( prop_Text_text == AutoOutput )  inqTextText();
 		if( prop_Speak_text == AutoOutput )  inqSpeakText();
 
-		parameter_generation();	/* ¥Ñ¥é¥á¡¼¥¿À¸À®(F0,MLSA¥Õ¥£¥ë¥¿·¸¿ô,·ÑÂ³Ä¹) */
-		do_synthesis();		/* ¹çÀ®ÇÈ·Á¤ÎÀ¸À® */
+		parameter_generation();	/* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆ(F0,MLSAãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°,ç¶™ç¶šé•·) */
+		do_synthesis();		/* åˆæˆæ³¢å½¢ã®ç”Ÿæˆ */
 #ifdef PRINTDATA
 		TmpMsg( "Synthesis Done.\n" );
 #endif
@@ -616,7 +616,7 @@ void setSpeak( char *rel, char *val )
 	if( strcmp(val,"NOW")==0 )  {
 		strcpy( slot_Speak_stat, "SPEAKING" );
 		if( prop_Speak_stat == AutoOutput )  inqSpeakStat();
-		do_output(NULL);	/* ²»À¼½ĞÎÏ */
+		do_output(NULL);	/* éŸ³å£°å‡ºåŠ› */
 
 	} else if( strcmp(val,"STOP")==0 )  {
 		abort_output();
@@ -639,7 +639,7 @@ void setSpeak( char *rel, char *val )
 			}
 			strcpy( slot_Speak_stat, "SPEAKING" );
 			if( prop_Speak_stat == AutoOutput )  inqSpeakStat();
-			do_output(NULL);	/* ²»À¼½ĞÎÏ */
+			do_output(NULL);	/* éŸ³å£°å‡ºåŠ› */
 		}
 	}
 /*	strcpy( slot_Speak_stat, "IDLE" );
@@ -681,7 +681,7 @@ void setSaveWAV( char *rel, char *filename )
 	}
 }
 
-/* ±¤Î§¾ğÊó¤Î½ñ¤­½Ğ¤· */
+/* éŸ»å¾‹æƒ…å ±ã®æ›¸ãå‡ºã— */
 void setSavePros( char *rel, char *filename )
 {
 	if( strcmp(rel,"=")==0 )  {
@@ -691,7 +691,7 @@ void setSavePros( char *rel, char *filename )
 	}
 }
 
-/* ²»À¼¥Ç¡¼¥¿¤ÎÆÉ¤ß¹ş¤ß */
+/* éŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®èª­ã¿è¾¼ã¿ */
 void setSpeechFile( char *rel, char *filename, SPEECHFILETYPE type )
 {
 	strcpy( slot_Speak_stat, "PROCESSING" );
@@ -715,7 +715,7 @@ void setSpeechFile( char *rel, char *filename, SPEECHFILETYPE type )
 	if( prop_Speak_stat == AutoOutput )  inqSpeakStat();
 }
 
-/* ±¤Î§¾ğÊó¤ÎÆÉ¤ß¹ş¤ß */
+/* éŸ»å¾‹æƒ…å ±ã®èª­ã¿è¾¼ã¿ */
 void setProsFile( char *rel, char *filename )
 {
 	int error;
@@ -728,45 +728,45 @@ void setProsFile( char *rel, char *filename )
 		if( prop_ProsFile == AutoOutput )  inqProsFile();
 
 		refresh();
-		/* prosBuf ¤Ë³Æ¼ï¥Ñ¥é¥á¡¼¥¿¤òÆÉ¤ß¹ş¤à */
+		/* prosBuf ã«å„ç¨®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’èª­ã¿è¾¼ã‚€ */
 		error = read_pros_file( filename );
 		if( ! error )  {
 
-			text_analysis( input_text );	/* ¥Æ¥­¥¹¥È²òÀÏ */
+			text_analysis( input_text );	/* ãƒ†ã‚­ã‚¹ãƒˆè§£æ */
 			if( prop_Text_text == AutoOutput )  inqTextText();
 			if( prop_Speak_text == AutoOutput )  inqSpeakText();
 
 /*		parameter_generation();		*/
 
-			init_parameter(); /* ¥Ñ¥é¥á¡¼¥¿À¸À®¤Î½àÈ÷ */
-			make_duration(); /* ÁÇ¤Î¥Æ¥­¥¹¥È¤«¤é¾õÂÖ·ÑÂ³Ä¹¤òÀ¸À® */
-			modify_duration(); /* ·ÑÂ³Ä¹¤Î½¤Àµ(¥¿¥°½èÍı) */
+			init_parameter(); /* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆã®æº–å‚™ */
+			make_duration(); /* ç´ ã®ãƒ†ã‚­ã‚¹ãƒˆã‹ã‚‰çŠ¶æ…‹ç¶™ç¶šé•·ã‚’ç”Ÿæˆ */
+			modify_duration(); /* ç¶™ç¶šé•·ã®ä¿®æ­£(ã‚¿ã‚°å‡¦ç†) */
 
-			/* ²»ÁÇ·ÑÂ³Ä¹¤¬½¤Àµ¤µ¤ì¤Æ¤¤¤ë¾ì¹ç¤Ï¡¢¾õÂÖ·ÑÂ³Ä¹¤ò
-			   ·×»»¤·¤Ê¤ª¤¹ */
+			/* éŸ³ç´ ç¶™ç¶šé•·ãŒä¿®æ­£ã•ã‚Œã¦ã„ã‚‹å ´åˆã¯ã€çŠ¶æ…‹ç¶™ç¶šé•·ã‚’
+			   è¨ˆç®—ã—ãªãŠã™ */
 			update_duration();
 			
-			/* ¤³¤³¤Ç¡¢prosBuf ¤Î¥Ç¡¼¥¿¤Ç²»ÁÇ»ş´ÖÄ¹¤òÀßÄê¤¹¤ë¡£ */
+			/* ã“ã“ã§ã€prosBuf ã®ãƒ‡ãƒ¼ã‚¿ã§éŸ³ç´ æ™‚é–“é•·ã‚’è¨­å®šã™ã‚‹ã€‚ */
 
-			make_cumul_time(); /* ²»ÁÇ»ş´ÖÄ¹¤ÎÎßÀÑ¤ò·×»» */
-			modify_voice(); /* ÏÃ¼Ô¤Î¥¹¥¤¥Ã¥Á¡¢¦Á¥Ñ¥é¥á¡¼¥¿¤ÎÊÑ¹¹(¥¿¥°½èÍı) */
+			make_cumul_time(); /* éŸ³ç´ æ™‚é–“é•·ã®ç´¯ç©ã‚’è¨ˆç®— */
+			modify_voice(); /* è©±è€…ã®ã‚¹ã‚¤ãƒƒãƒã€Î±ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã®å¤‰æ›´(ã‚¿ã‚°å‡¦ç†) */
 
 			if( prop_Text_pho == AutoOutput )  inqTextPho();
 			if( prop_Speak_pho == AutoOutput )  inqSpeakPho();
 			if( prop_Text_dur == AutoOutput )  inqTextDur();
 			if( prop_Speak_dur == AutoOutput )  inqSpeakDur();
 
-			make_parameter(); /* ¥Ñ¥é¥á¡¼¥¿À¸À®¤ò¼Â¹Ô */
+			make_parameter(); /* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆã‚’å®Ÿè¡Œ */
 
-			modify_f0(); /* F0¤Î½¤Àµ(¥¿¥°½èÍı) */
-			modify_power(); /* ¥Ñ¥ï¡¼¤Î½¤Àµ(¥¿¥°½èÍı) */
+			modify_f0(); /* F0ã®ä¿®æ­£(ã‚¿ã‚°å‡¦ç†) */
+			modify_power(); /* ãƒ‘ãƒ¯ãƒ¼ã®ä¿®æ­£(ã‚¿ã‚°å‡¦ç†) */
 
-/*		parameter_generation();	 ¤³¤³¤Ş¤Ç	*/
+/*		parameter_generation();	 ã“ã“ã¾ã§	*/
 
-			/* À¸À®¤µ¤ì¤¿¥Ñ¥é¥á¡¼¥¿¤ËÂĞ¤·¤ÆF0¤Èc0¤ò¹¹¿· */
+			/* ç”Ÿæˆã•ã‚ŒãŸãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã«å¯¾ã—ã¦F0ã¨c0ã‚’æ›´æ–° */
 			error = set_f0_and_power( filename );
 			if( ! error )  {
-				do_synthesis();		/* ¹çÀ®ÇÈ·Á¤ÎÀ¸À® */
+				do_synthesis();		/* åˆæˆæ³¢å½¢ã®ç”Ÿæˆ */
 			}
 		}
 	} else {
@@ -776,14 +776,14 @@ void setProsFile( char *rel, char *filename )
 	if( prop_Speak_stat == AutoOutput )  inqSpeakStat();
 }
 
-/* Ããä¥¤Î·ë²Ì¤ò¥Õ¥¡¥¤¥ë¤«¤éÆÉ¤ß¹ş¤ß */
+/* èŒ¶ç­Œã®çµæœã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã¿ */
 void setParsedText( char *rel, char *filename )
 {
 	if( strcmp(rel,"=")==0 )  {
 		refresh();
-		text_analysis_file( filename );	/* ¥Æ¥­¥¹¥È²òÀÏ */
-		parameter_generation();	/* ¥Ñ¥é¥á¡¼¥¿À¸À®(F0,MLSA¥Õ¥£¥ë¥¿·¸¿ô,·ÑÂ³Ä¹) */
-		do_synthesis();		/* ¹çÀ®ÇÈ·Á¤ÎÀ¸À® */
+		text_analysis_file( filename );	/* ãƒ†ã‚­ã‚¹ãƒˆè§£æ */
+		parameter_generation();	/* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆ(F0,MLSAãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•°,ç¶™ç¶šé•·) */
+		do_synthesis();		/* åˆæˆæ³¢å½¢ã®ç”Ÿæˆ */
 #ifdef PRINTDATA
 		TmpMsg( "Synthesis Done.\n" );
 #endif
@@ -850,12 +850,12 @@ void setErr( char *rel, char *filename )
 
 void parameter_generation()
 {
-/* ²»À¼¹çÀ®¤Î½é´üÀßÄê */
+/* éŸ³å£°åˆæˆã®åˆæœŸè¨­å®š */
 	init_parameter();
 
-/* ²»ÁÇ·ÑÂ³Ä¹¤Î·èÄê */
+/* éŸ³ç´ ç¶™ç¶šé•·ã®æ±ºå®š */
 	make_duration();
-/* ²»ÁÇ·ÑÂ³Ä¹¤ÎÊÑ¹¹ */
+/* éŸ³ç´ ç¶™ç¶šé•·ã®å¤‰æ›´ */
 	modify_duration();
 	make_cumul_time();
 	modify_voice();
@@ -865,10 +865,10 @@ void parameter_generation()
 	if( prop_Text_dur == AutoOutput )  inqTextDur();
 	if( prop_Speak_dur == AutoOutput )  inqSpeakDur();
 
-/* ¥Ñ¥é¥á¡¼¥¿À¸À® F0,MLSA¥Õ¥£¥ë¥¿·¸¿ô */
+/* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ç”Ÿæˆ F0,MLSAãƒ•ã‚£ãƒ«ã‚¿ä¿‚æ•° */
 	make_parameter();
 
-/* F0, ¥²¥¤¥ó b(0) ¤ÎÊÑ¹¹ */
+/* F0, ã‚²ã‚¤ãƒ³ b(0) ã®å¤‰æ›´ */
 	modify_f0();
 	modify_power();
 }
@@ -923,11 +923,11 @@ int main( int argc, char **argv )
 			read_conf( argv[1] );
 			--argc;  ++argv;
 			break;
-		/*******¢­for server mode *******/
+		/*******â†“for server mode *******/
 		case 'p':
-   		        /* °ú¿ô¤¬ÉÔÀµ¤Ê¾ì¹ç¤Ï¥¨¥é¡¼½ĞÎÏ */
+   		        /* å¼•æ•°ãŒä¸æ­£ãªå ´åˆã¯ã‚¨ãƒ©ãƒ¼å‡ºåŠ› */
 			if( argc < 2 )  usage( com );
-			/* ¥İ¡¼¥ÈÈÖ¹æ¤ÎÆÉ¤ß¹ş¤ß */
+			/* ãƒãƒ¼ãƒˆç•ªå·ã®èª­ã¿è¾¼ã¿ */
 			i = atoi( argv[1] );
 			if (i > 1024) {
 			        nPort = i;
@@ -935,7 +935,7 @@ int main( int argc, char **argv )
 			s_mode = 1;
 			--argc;  ++argv;
 			break;
-		/*******¢¬***********************/
+		/*******â†‘***********************/
 		case 'v':
 			printf( "%s\n", moduleVersion );
 			printf( "%s\n", protocolVersion );
@@ -969,7 +969,7 @@ int main( int argc, char **argv )
 		}
 #endif
 
-		/* ¡Öo¡× ¤Ç set Speak = NOW ¤Î¥·¥ç¡¼¥È¥«¥Ã¥È */
+		/* ã€Œoã€ ã§ set Speak = NOW ã®ã‚·ãƒ§ãƒ¼ãƒˆã‚«ãƒƒãƒˆ */
 		if( strcmp(v_arg[0],"o")==0 )  {
 			setSpeak( "=", "NOW" );
 			continue;
