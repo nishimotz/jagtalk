@@ -1,6 +1,6 @@
 dnl $Id: configure.in,v 1.6 2009/02/13 02:02:47 sako Exp $
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(gtalk, 1.5, galateatalk-dev@lists.sourceforge.jp)
+AC_INIT(jagtalk, 1.5.1, nishimotz@gmail.com)
 
 dnl install-sh will be searched (and found) here
 AC_CONFIG_AUX_DIR(config)
@@ -62,7 +62,7 @@ dnl	  [AC_MSG_ERROR([sys/soundcard.h is not found])])
 fi
 
 AC_ARG_ENABLE(utf8,
-[  --enable-utf8          Turn on utf8 mode (default=no)],
+[  --enable-utf8           Turn on utf8 mode (default=no)],
 [ if test "x$enable_utf8" = "xyes"; then
      AC_DEFINE(UTF8)
      enable_utf8=yes
