@@ -33,7 +33,7 @@
 
 #define YesNoSlot(s)  ( ( (s==1) ? "YES" : "NO" ) )
 
-char *moduleVersion = "GalateaTalk Ver. 1.5.2 (gtalk-091012)";
+char *moduleVersion = "jagtalk based on GalateaTalk Ver. 1.5.2 (gtalk-091012)";
 char *protocolVersion = "Protocol Ver. 1.0";
 
 /* synthesis.h グローバル変数の定義 */
@@ -227,6 +227,12 @@ void server_close_client ( void );
 int server_getline ( char *buf, int buf_size );
 void server_destroy ( void );
 /********↑***********************/
+
+/* compatibility with Microsoft Visual Studio 2008 */
+void setSpeak( char *rel, char *val );
+void setAlpha( char *rel, char *val );
+void setPostfilter_coef( char *rel, char *val);
+void setText( char *rel, char *val );
 
 extern FILE *fp_err;
 
@@ -588,7 +594,7 @@ void setText( char *rel, char *val )
 	if( strcmp(rel,"=")==0 )  {
 		refresh();
 		text_analysis( val );	/* テキスト解析 */
-		if( prop_Text_text == AutoOutput )  inqTextText();
+		if( prop_Text_text == AutoOutput )  inqTextText(); 
 		if( prop_Speak_text == AutoOutput )  inqSpeakText();
 
 		parameter_generation();	/* パラメータ生成(F0,MLSAフィルタ係数,継続長) */
