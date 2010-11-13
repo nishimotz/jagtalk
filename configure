@@ -4741,6 +4741,10 @@ fi
 
 fi
 
+if test "x$enable_macosx = xyes"; then
+   CFLAGS="-arch i386 ${CFLAGS}"
+fi
+
 ac_config_files="$ac_config_files Makefile"
 
 cat >confcache <<\_ACEOF

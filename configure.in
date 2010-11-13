@@ -296,4 +296,8 @@ dnl   AC_CHECK_HEADERS( transform.h xsltutils.h exslt.h)
 		AC_MSG_ERROR(libexslt not found))
 fi
 
+if test "x$enable_macosx = xyes"; then
+   CFLAGS="-arch i386 ${CFLAGS}"
+fi
+
 AC_OUTPUT(Makefile)
