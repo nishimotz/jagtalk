@@ -6,10 +6,12 @@
 
 #include	<stdio.h>
 #include	<stdlib.h>
+#include	<string.h>
 #include	"confpara.h"
 
 int TmpMsg(char *,...);
 int ErrMsg(char *,...);
+void restart(int);
 
 int chasen_process = 0;
 
@@ -21,12 +23,21 @@ char chasen_rc_option[] = "-r";
 
 #include	<unistd.h>
 
+#ifdef MACOSX
+typedef struct _pipe_chain {
+	char *command[100];
+	int last;	/* 最後のプロセスのみ 1 にする。他は 0 に。*/
+} PIPE_CHAIN;
+
+PIPE_CHAIN pchain[4];
+#else
 typedef struct _pipe_chain {
 	char *command[20];
 	int last;	/* 最後のプロセスのみ 1 にする。他は 0 に。*/
 } PIPE_CHAIN;
 
 PIPE_CHAIN pchain[3];
+#endif
 
 /*
 #define CHASEN "/usr/local/bin/chasen"
@@ -61,6 +72,40 @@ void set_command( char *str, char *command[] )
 
 int make_chasen_process( CHASEN_FD *fd_in, CHASEN_FD *fd_out )
 {
+#ifdef MACOSX
+	int to_parent[2];
+
+	if( chasen_process != 0 )  return 0;
+
+#if 0
+	pchain[0].command[0] = "/opt/local/bin/nkf";
+	pchain[0].command[1] = "-Ew";
+	pchain[0].command[2] = '\0';
+	pchain[0].last = 0;	
+	pchain[1].command[0] = "/opt/local/bin/chasen";
+	pchain[1].command[1] = "-r";
+	pchain[1].command[2] = "chasenrc-utf8-macosx";
+	pchain[1].command[3] = "-i";
+	pchain[1].command[4] = "w";
+	pchain[1].command[5] = '\0';
+	pchain[1].last = 0;
+	pchain[2].command[0] = "/opt/local/bin/nkf";
+	pchain[2].command[1] = "-We";
+	pchain[2].command[2] = '\0';
+	pchain[2].last = 0;	
+	pchain[3].command[0] = "/usr/local/bin/chaone";
+	pchain[3].command[1] = "-s";
+	pchain[3].command[2] = "gtalk";
+	pchain[3].command[3] = "--encoding";
+	pchain[3].command[4] = "EUC-JP";
+	pchain[3].command[5] = '\0';
+	pchain[3].last = 1;	
+# else
+	pchain[0].command[0] = "./run-chasen-macosx.sh";
+	pchain[0].command[1] = '\0';
+	pchain[0].last = 1;	
+#endif
+#else
 	int to_parent[2];
 
 	if( chasen_process != 0 )  return 0;
@@ -69,7 +114,6 @@ int make_chasen_process( CHASEN_FD *fd_in, CHASEN_FD *fd_out )
 	pchain[0].command[1] = chasen_rc_option;
 	pchain[0].command[2] = chasen_rc;
 	pchain[0].command[3] = '\0';
-
 	if( chaone_bin[0] == '\0' )  {
 		pchain[0].last = 1;		/* set 1 if this process is the last */
 	} else {
@@ -77,6 +121,7 @@ int make_chasen_process( CHASEN_FD *fd_in, CHASEN_FD *fd_out )
 		set_command( chaone_bin, pchain[1].command );
 		pchain[1].last = 1;	
 	}
+#endif
 
 	/* to_parent は「最後の子 -> 親」で使う。*/
 	if( pipe(to_parent) < 0 )  {
@@ -164,13 +209,21 @@ int chasen_write_line( CHASEN_FD fd_out, char *text )
         int n;
 	
 	n = strlen( text );
+#ifdef MACOSX
+	ErrMsg( "writing:\n" );	
+	ErrMsg( text );	
+	ErrMsg( "\n" );	
+#endif
 	if( write( fd_out, text, n ) != n )  {
 		ErrMsg( "write error\n" );
 		restart( 1 );
 		return EOF;
 	}
 	write( fd_out, "\n", 1 );
-
+#ifdef MACOSX
+	fsync(fd_out);
+	ErrMsg( "write done.\n" );	
+#endif
         return 0;
 }
 
@@ -179,6 +232,9 @@ int chasen_read_line( CHASEN_FD fd, char *buf, int len )
 	char *buffer;
 
 	buffer = buf;
+#ifdef MACOSX
+	ErrMsg( "reading:\n" );	
+#endif
 	while( read( fd, buf, 1 ) != 0 )  {
 		if( *buf == '\n' )  {
 			*(buf) = '\0';		/* NLコードは削除 */
@@ -192,6 +248,11 @@ int chasen_read_line( CHASEN_FD fd, char *buf, int len )
 		}
 	}
 	*buf = '\0';
+#ifdef MACOSX
+	ErrMsg( "read done:\n" );	
+	ErrMsg( buf );	
+	ErrMsg( "\n" );	
+#endif
 	return( EOF );
 }
 #endif /* !USE_SPLIB */

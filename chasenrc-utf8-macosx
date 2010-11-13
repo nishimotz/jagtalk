@@ -1,10 +1,10 @@
 ;;
 ;;  chasenrc for unidic / chaOne
 ;;
-(GRAMMAR ../../unidic-chasen1312_eucj/)
+(GRAMMAR /Users/nishimotz/code/unidic-chasen1312_utf8-x64)
 (DADIC chadic)
 
-(UNKNOWN_POS (Ì¾»ì ÉáÄÌÌ¾»ì °ìÈÌ))
+(UNKNOWN_POS (åè© æ™®é€šåè© ä¸€èˆ¬))
 
 (OUTPUT_FORMAT "<W1 orth=\"%m\" kana=\"%?U/%m/%y0/\" pron=\"%?U/%m/%a0/\" pos=\"%U(%P-)\"%?T/ cType=\"%T \"//%?F/ cForm=\"%F \"//%?I/ %i0//>%m</W1>\n")
 

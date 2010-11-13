@@ -30,7 +30,11 @@ extern int xmlLoadExtDtdDefaultValue;
 #include "chaone.h"
 #include "confpara.h"
 
+#ifdef MACOSX
+static char *encoding = "UTF-8";
+#else
 static char *encoding = KANJICODE;
+#endif
 static int initialized = 0;
 
 void refresh_chaone( void )

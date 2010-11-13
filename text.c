@@ -434,7 +434,7 @@ void a2k4number (char *cont, char *kcont, char pc, char kc) {
   int p = 0;
   tpt = cont;
   while ( *tpt ) {
-    while ( *tpt == kc || *tpt >= '0' && *tpt <= '9' && *tpt != '\0' ) {
+    while ( *tpt == kc || (*tpt >= '0' && *tpt <= '9' && *tpt != '\0') ) {
       if (*tpt != kc) {
 	ttmp[tcp++] = *tpt;
       }

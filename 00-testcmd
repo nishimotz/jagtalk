@@ -1,0 +1,3 @@
+set Text = 1
+set SaveWAV = _out.wav
+set Run = EXIT

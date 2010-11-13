@@ -35,6 +35,7 @@ int in_auto_play;
 
 int ErrMsg(char *,...);
 int TmpMsg(char *,...);
+void RepMsg( char *, ... );
 void restart(int);
 void inqSpeakLen();
 void inqSpeakUtt();
