@@ -125,10 +125,11 @@ short	*out;
 	for( i=0; i<leng; ++i ) {
 		fwrite( &(out[i]), sizeof(short), 1, adfp);
 		/* モノラル音声出力ができない場合 */
+#ifdef LINUX
 		if( forced_stereo )  {
 			fwrite( &(out[i]), sizeof(short), 1, adfp);
 		}
-
+#endif
 		if(current_pos % 128 == 0) {
 #ifdef LINUX
 		        count_info info;
@@ -483,7 +484,9 @@ void auto_output_speaker_cleanup(void *dummy)
 
 void auto_output_speaker_thread(int *t)
 {
-
+#ifdef MACOSX
+  /* TODO: support MACOSX */
+#else 
   int total = *t;
   int nout;
   int last_state, last_type;
@@ -510,6 +513,7 @@ void auto_output_speaker_thread(int *t)
   ioctl(ADFD, SOUND_PCM_SYNC, 0);
 
   pthread_cleanup_pop(1);
+#endif
   return;
 }
 
@@ -540,6 +544,9 @@ void do_auto_output()
 
 void abort_auto_output()
 {
+#ifdef MACOSX
+  /* TODO: support MACOSX */
+#else
   void *statusp;
 
   gettimeofday( &tv, &tz );
@@ -554,6 +561,7 @@ void abort_auto_output()
 
   if( prop_Speak_len == AutoOutput )  inqSpeakLen();
   if( prop_Speak_utt == AutoOutput )  inqSpeakUtt();
+#endif
 }
 
 

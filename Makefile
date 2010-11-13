@@ -1,14 +1,14 @@
-PACKAGE = gtalk
-VERSION = 1.5
+PACKAGE = jagtalk
+VERSION = 1.5.1
 
 CC	= gcc
 RM	= /bin/rm
-TAR	= /bin/tar
-GZIP	= /bin/gzip
+TAR	= /usr/bin/tar
+GZIP	= /usr/bin/gzip
 
-CFLAGS	= -DPACKAGE_NAME=\"gtalk\" -DPACKAGE_TARNAME=\"gtalk\" -DPACKAGE_VERSION=\"1.5\" -DPACKAGE_STRING=\"gtalk\ 1.5\" -DPACKAGE_BUGREPORT=\"galateatalk-dev@lists.sourceforge.jp\" -DLINUX=1 -DUTF8=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1
-LIBS	=  -lm  -lpthread -ldl
-TARGET	= gtalk
+CFLAGS	= -DPACKAGE_NAME=\"jagtalk\" -DPACKAGE_TARNAME=\"jagtalk\" -DPACKAGE_VERSION=\"1.5.1\" -DPACKAGE_STRING=\"jagtalk\ 1.5.1\" -DPACKAGE_BUGREPORT=\"nishimotz@gmail.com\" -DPACKAGE_URL=\"\" -DUTF8=1 -DHAVE_LIBICONV=1 -DMACOSX=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1
+LIBS	=  -liconv -lm  -lpthread -ldl
+TARGET	= jagtalk
 
 OBJ	= accent.o \
 	chasen.o \
