@@ -3,11 +3,11 @@ VERSION = 1.5.1
 
 CC	= gcc
 RM	= /bin/rm
-TAR	= /usr/bin/tar
-GZIP	= /usr/bin/gzip
+TAR	= /bin/tar
+GZIP	= /bin/gzip
 
-CFLAGS	= -DPACKAGE_NAME=\"jagtalk\" -DPACKAGE_TARNAME=\"jagtalk\" -DPACKAGE_VERSION=\"1.5.1\" -DPACKAGE_STRING=\"jagtalk\ 1.5.1\" -DPACKAGE_BUGREPORT=\"nishimotz@gmail.com\" -DPACKAGE_URL=\"\" -DUTF8=1 -DHAVE_LIBICONV=1 -DMACOSX=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1 -arch i386 -g
-LIBS	=  -liconv -lm  -lpthread -ldl
+CFLAGS	= -DPACKAGE_NAME=\"jagtalk\" -DPACKAGE_TARNAME=\"jagtalk\" -DPACKAGE_VERSION=\"1.5.1\" -DPACKAGE_STRING=\"jagtalk\ 1.5.1\" -DPACKAGE_BUGREPORT=\"nishimotz@gmail.com\" -DLINUX=1 -DUTF8=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1
+LIBS	=  -lm  -lpthread -ldl
 TARGET	= jagtalk
 
 OBJ	= accent.o \
