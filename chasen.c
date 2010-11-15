@@ -209,7 +209,7 @@ int chasen_write_line( CHASEN_FD fd_out, char *text )
         int n;
 	
 	n = strlen( text );
-#ifdef MACOSX
+#ifdef DEBUG_CHASEN
 	ErrMsg( "writing:\n" );	
 	ErrMsg( text );	
 	ErrMsg( "\n" );	
@@ -220,7 +220,7 @@ int chasen_write_line( CHASEN_FD fd_out, char *text )
 		return EOF;
 	}
 	write( fd_out, "\n", 1 );
-#ifdef MACOSX
+#ifdef DEBUG_CHASEN
 	fsync(fd_out);
 	ErrMsg( "write done.\n" );	
 #endif
@@ -232,7 +232,7 @@ int chasen_read_line( CHASEN_FD fd, char *buf, int len )
 	char *buffer;
 
 	buffer = buf;
-#ifdef MACOSX
+#ifdef DEBUG_CHASEN
 	ErrMsg( "reading:\n" );	
 #endif
 	while( read( fd, buf, 1 ) != 0 )  {
@@ -248,7 +248,7 @@ int chasen_read_line( CHASEN_FD fd, char *buf, int len )
 		}
 	}
 	*buf = '\0';
-#ifdef MACOSX
+#ifdef DEBUG_CHASEN
 	ErrMsg( "read done:\n" );	
 	ErrMsg( buf );	
 	ErrMsg( "\n" );	
