@@ -8,8 +8,6 @@ GZIP	= /bin/gzip
 
 CFLAGS	= -DPACKAGE_NAME=\"jagtalk\" -DPACKAGE_TARNAME=\"jagtalk\" -DPACKAGE_VERSION=\"1.5.1\" -DPACKAGE_STRING=\"jagtalk\ 1.5.1\" -DPACKAGE_BUGREPORT=\"nishimotz@gmail.com\" -DLINUX=1 -DUTF8=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1
 LIBS	=  -lm  -lpthread -ldl
-# CFLAGS	= -DPACKAGE_NAME=\"jagtalk\" -DPACKAGE_TARNAME=\"jagtalk\" -DPACKAGE_VERSION=\"1.5.1\" -DPACKAGE_STRING=\"jagtalk\ 1.5.1\" -DPACKAGE_BUGREPORT=\"nishimotz@gmail.com\" -DPACKAGE_URL=\"\" -DHAVE_LIBICONV=1 -DMACOSX=1 -DAUTO_DA=1 -DWORDS_LITTLEENDIAN=1 -DUTF8=1 -g -Wall -arch i386 -DPRINTDATA=1
-# LIBS	=  -liconv -lm  -lpthread -ldl
 TARGET	= jagtalk
 
 OBJ	= accent.o \
@@ -138,7 +136,7 @@ do_synthesis.o: synthesis.h defaults.h misc.h mlpg.h vocoder.h tree.h hmmsynth.h
 
 modify_parameter.o: synthesis.h tag.h defaults.h confpara.h misc.h tree.h hmmsynth.h model.h slot.h
 
-do_output.o: synthesis.h defaults.h confpara.h da.h slot.h do_output_sp.c
+do_output.o: synthesis.h defaults.h confpara.h da.h slot.h do_output_sp.c do_output_portaudio.c do_output_oss.c
 
 fileIO.o: synthesis.h defaults.h slot.h
 

@@ -1,1 +1,1 @@
-cat 00-testcmd | ./jagtalk -C jagtalk.conf
+cat 00-testcmd-play | ./jagtalk -C jagtalk.conf

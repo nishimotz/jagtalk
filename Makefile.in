@@ -136,7 +136,7 @@ do_synthesis.o: synthesis.h defaults.h misc.h mlpg.h vocoder.h tree.h hmmsynth.h
 
 modify_parameter.o: synthesis.h tag.h defaults.h confpara.h misc.h tree.h hmmsynth.h model.h slot.h
 
-do_output.o: synthesis.h defaults.h confpara.h da.h slot.h do_output_sp.c
+do_output.o: synthesis.h defaults.h confpara.h da.h slot.h do_output_sp.c do_output_portaudio.c do_output_oss.c
 
 fileIO.o: synthesis.h defaults.h slot.h
 

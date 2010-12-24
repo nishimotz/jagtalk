@@ -61,6 +61,7 @@ dnl	  [AC_MSG_ERROR([sys/soundcard.h is not found])])
   esac	
 fi
 
+dnl by nishimotz
 AC_ARG_ENABLE(utf8,
 [  --enable-utf8           Turn on utf8 mode (default=no)],
 [ if test "x$enable_utf8" = "xyes"; then
@@ -69,11 +70,23 @@ AC_ARG_ENABLE(utf8,
      enable_utf8=yes
 fi])
 
+dnl by nishimotz
 AC_ARG_ENABLE(macosx,
 [  --enable-macosx           Turn on macosx support (default=no)],
 [ if test "x$enable_macosx" = "xyes"; then
      AC_DEFINE(MACOSX)
      enable_macosx=yes
+fi])
+
+dnl by nishimotz
+AC_ARG_ENABLE(portaudio,
+[  --enable-portaudio        Turn on portaudio mode (default=no)],
+[ if test "x$enable_portaudio" = "xyes"; then
+     AC_DEFINE(USE_PORTAUDIO)
+     AC_CHECK_LIB(pthread, pthrad_create)
+     LIBS="$LIBS -lpthread -ldl -lportaudio"
+dnl     AC_CHECK_LIB(iconv, iconv_open)
+dnl     enable_portaudio=yes
 fi])
 
 dnl Check option
@@ -299,5 +312,9 @@ fi
 if test "x$enable_macosx = xyes"; then
    CFLAGS="-arch i386 ${CFLAGS}"
 fi
+
+dnl if test "x$enable_portaudio = xyes"; then
+dnl    CFLAGS="-DUSE_PORTAUDIO ${CFLAGS}"
+dnl fi
 
 AC_OUTPUT(Makefile)
