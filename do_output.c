@@ -28,6 +28,10 @@ void abort_auto_output();
 # ifdef USE_PORTAUDIO
 #  include "do_output_portaudio.c"
 # else
-#  include "do_output_oss.c"
-# endif
+#  ifdef MACOSX
+#    include "do_output_openal.c"
+#  else
+#    include "do_output_oss.c"
+#  endif /* !MACOSX */
+# endif /* !USE_PORTAUDIO */
 #endif /* !USE_SPLIB */

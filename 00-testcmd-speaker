@@ -1,2 +1,6 @@
+# prop Speak.len = AutoOutput
+# prop Speak.utt = AutoOutput
+# prop Speak.stat = AutoOutput
+# prop Speak.syncinterval = 100
 set Text = 123
 set Speak = NOW
