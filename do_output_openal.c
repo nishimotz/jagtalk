@@ -16,16 +16,15 @@
 
 /* extern WAVE wave; in synthesis.h */
 
-/* from oss version */
-int     current_pos;
-int     prev_tell_pos_ms;
-
 const int SIZE = 256*400;
 
 /* OpenAL */
 static ALCdevice *device = NULL;
 static ALCcontext *context = NULL;
 static ALuint buffer = 0, source = 0;
+
+/* output stopping flag */
+static int da_stopping = 0;
 
 /* prototypes */
 void reset_audiodev();
@@ -43,54 +42,49 @@ void reset_output()
 
 void init_output()
 {
-  int	dtype;
-  dtype = DTYPE;
-  init_audiodev(dtype);
+  init_audiodev();
 }
 
 void sndout(int	leng, short *out)
 {
-  int i, pos, pos_ms, interval_ms, samp_rate;
-
-  //samp_rate = data_type[DTYPE].sample;
-  samp_rate = wave.rate;
-  for( i=0; i<leng; ++i ) {
-    /* OpenAL */
-    alBufferData(buffer, AL_FORMAT_MONO16, 
-		 &(out[i]), sizeof(short), samp_rate);
-    alGenSources(1, &source);
-    alSourcei(source, AL_BUFFER, buffer);
-    alSourcePlay(source);
-
-    if(current_pos % 128 == 0) {
-      pos = current_pos;
-      pos_ms = (1000 * pos) / samp_rate;
-      interval_ms = pos_ms - prev_tell_pos_ms;
-      if( slot_Speak_syncinterval > 0 && interval_ms >= slot_Speak_syncinterval ) {
-	RepMsg("tell Speak.sync = %d\n", pos_ms);
-	/*prev_tell_pos_ms = pos_ms;*/
-	while( prev_tell_pos_ms + slot_Speak_syncinterval <= pos_ms ) {
-	  prev_tell_pos_ms += slot_Speak_syncinterval;
-	}
-      }
+  ALint state;
+  //printf("sndout(%d)\n", leng);  fflush(stdout);
+  alBufferData(buffer, AL_FORMAT_MONO16, 
+	       out, sizeof(short) * leng, wave.rate);
+  alGenSources(1, &source);
+  alSourcei(source, AL_BUFFER, buffer);
+  alSourcePlay(source);
+  while (alGetSourcei(source, AL_SOURCE_STATE, &state), state != AL_STOPPED) {
+    if (da_stopping) {
+      alSourceStop(source);
+      update_talked_da_msec();
+      if (prop_Speak_len == AutoOutput)  inqSpeakLen();
+      if (prop_Speak_utt == AutoOutput)  inqSpeakUtt();
+      reset_audiodev();
+      da_stopping = 0;
+      return;
     }
-    ++current_pos;
+    if (slot_Speak_syncinterval > 0) {
+      usleep(slot_Speak_syncinterval * 1000);
+      update_talked_da_msec();
+      RepMsg("tell Speak.sync = %d\n", talked_DA_msec);
+    } else {
+      usleep(1000000);
+      //printf("sndout sleeping 1\n");
+    }
   }
 }
 
-void init_audiodev(int dtype)
+void init_audiodev()
 {
   /* OpenAL */
   device = alcOpenDevice(NULL);
   context = alcCreateContext(device, NULL);
   alcMakeContextCurrent(context);
   alGenBuffers(1, &buffer);
-  // 
-  current_pos = 0;
-  prev_tell_pos_ms = 0;
 }
 
-void reset_audiodev()
+void close_audiodev()
 {
   /* OpenAL */
   alSourceStop(source);
@@ -99,17 +93,32 @@ void reset_audiodev()
   alcMakeContextCurrent(NULL);
   alcDestroyContext(context);
   alcCloseDevice(device);
-  //
-  current_pos = 0;
-  prev_tell_pos_ms = 0;
 }
 
-struct timeval tv;
-struct timezone tz;
+void reset_audiodev()
+{
+  close_audiodev();
+}
+
+static struct timeval tv;
+static struct timezone tz;
 static int start_DA_sec;
 static int start_DA_usec;
 
-pthread_t thread;
+void set_start_da_time()
+{
+  gettimeofday( &tv, &tz );
+  start_DA_sec = (int)tv.tv_sec;
+  start_DA_usec = (int)tv.tv_usec;
+}
+
+void update_talked_da_msec()
+{
+  gettimeofday( &tv, &tz );
+  talked_DA_msec = (tv.tv_sec - start_DA_sec) * 1000 + (tv.tv_usec - start_DA_usec) / 1000.0;
+}
+
+static pthread_t thread;
 
 void output_speaker_cleanup(void *dummy)
 {
@@ -120,40 +129,21 @@ void output_speaker_cleanup(void *dummy)
 
 void output_speaker_thread(int *t)
 {
-  int total = *t;
-  int nout;
-  int last_state, last_type;
-
-  pthread_setcanceltype(PTHREAD_CANCEL_DEFERRED, &last_type);
-  pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &last_state);
-  pthread_cleanup_push((void *)output_speaker_cleanup, NULL);
+  static int total;
+  static int nout;
+  //static int last_state, last_type;
   
+  total = *t;
+  //printf("output_speaker_thread(total %d)\n", total);  fflush(stdout);
   init_output();
   nout = 0;
-  while ( nout < total - SIZE)  {
+  set_start_da_time();
+  while (nout < total - SIZE) {
     sndout(SIZE,&wave.data[nout]);
     nout += SIZE;
-    pthread_testcancel();
   }
   sndout(total - nout, &wave.data[nout]);
-  // TODO: flush output
-
-  pthread_cleanup_pop(1);
-}
-
-void abort_demanded_output()
-{
-  void *statusp;
-
-  gettimeofday( &tv, &tz );
-  talked_DA_msec = (tv.tv_sec-start_DA_sec)*1000 + 
-                   (tv.tv_usec-start_DA_usec)/1000.;
-
-  pthread_cancel(thread);
-  pthread_join(thread, &statusp);
-
-  if( prop_Speak_len == AutoOutput )  inqSpeakLen();
-  if( prop_Speak_utt == AutoOutput )  inqSpeakUtt();
+  //printf("output_speaker_thread() done.\n");  fflush(stdout);
 }
 
 void do_output(char *fn)
@@ -162,54 +152,23 @@ void do_output(char *fn)
   
   in_auto_play = 0;
 
-  if( fn )  {
-    do_output_file( fn );
+  if (fn)  {
+    do_output_file(fn);
     return;
   }
   
   nsample = wave.nsample;
-  
-  gettimeofday( &tv, &tz );
-  start_DA_sec = (int)tv.tv_sec;
-  start_DA_usec = (int)tv.tv_usec;
   talked_DA_msec = -1;
   already_talked = 1;
   
-#if 0
   pthread_create(&thread,
 		 NULL,
 		 (void *) output_speaker_thread,
 		 (void *) &nsample);
-#else
-  device = alcOpenDevice(NULL);
-  context = alcCreateContext(device, NULL);
-  alcMakeContextCurrent(context);
-  alGenBuffers(1, &buffer);
-
-  alBufferData(buffer, AL_FORMAT_MONO16, 
-	       wave.data, 
-	       nsample * sizeof(short), 
-	       wave.rate /* data_type[DTYPE].sample */);
-
-  alGenSources(1, &source);
-  alSourcei(source, AL_BUFFER, buffer);
-  alSourcePlay(source);
-  sleep(10);
-
-  alSourceStop(source);
-  alDeleteSources(1, &source);
-  alDeleteBuffers(1, &buffer);
-  alcMakeContextCurrent(NULL);
-  alcDestroyContext(context);
-  alcCloseDevice(device);
-#endif
 }
 
 void abort_output()
 {
-#if 0
-  abort_demanded_output();
-#endif
+  //printf("abort_output()\n");  fflush(stdout);
+  da_stopping = 1;
 }
-
-
