@@ -26,27 +26,36 @@ extern int s_mode;
 
 /* to report messages to Control Unit */
 
+
+static void eucjp_to_utf8(char *orig_buf, char *buf)
+{
+  iconv_t m_iconv = iconv_open("UTF-8", "EUC-JP"); // tocode, fromcode
+  size_t in_size = (size_t)ICONV_BUFSIZE;
+  size_t out_size = (size_t)ICONV_BUFSIZE;
+  char *in = orig_buf;
+  char *out = buf;
+  iconv(m_iconv, &in, &in_size, &out, &out_size);
+  iconv_close(m_iconv);
+}
+
 int RepMsg(char *fmt, ...)
 {
+# ifdef UTF8
 	va_list ap;
 	int error;
-
-# ifdef UTF8
         char orig_buf[ICONV_BUFSIZE];
         char buf[ICONV_BUFSIZE];
+
 	va_start( ap, fmt );
 	error = vsprintf( orig_buf, fmt, ap );
 	va_end( ap );
-        iconv_t m_iconv = iconv_open("UTF-8", "EUC-JP"); // tocode, fromcode
-        size_t in_size = (size_t)ICONV_BUFSIZE;
-        size_t out_size = (size_t)ICONV_BUFSIZE;
-        char *in = orig_buf;
-        char *out = buf;
-        iconv(m_iconv, &in, &in_size, &out, &out_size);
-        iconv_close(m_iconv);
+	eucjp_to_utf8(orig_buf, buf);
         fputs( buf, stdout );
 	fflush( stdout );
 # else
+	va_list ap;
+	int error;
+
 	va_start( ap, fmt );
 	error = vfprintf( stdout, fmt, ap );
 	fflush( stdout );
@@ -93,14 +102,29 @@ int TmpMsg(char *fmt, ...)
 
 int LogMsg(char *fmt, ...)
 {
+#ifdef UTF8
+	va_list ap;
+	int error;
+        char orig_buf[ICONV_BUFSIZE];
+        char buf[ICONV_BUFSIZE];
+
+	va_start( ap, fmt );
+	error = vsprintf( orig_buf, fmt, ap );
+	va_end( ap );
+	eucjp_to_utf8( orig_buf, buf );
+	fputs( buf, logfp );
+	fflush( logfp );
+	return( error );
+#else
 	va_list ap;
 	int error;
 
 	va_start( ap, fmt );
-	error = vfprintf( logfp, fmt, ap );
-	fflush( stderr );
+	error = vsprintf( orig_buf, fmt, ap );
 	va_end( ap );
+	fflush( logfp );
 	return( error );
+#endif
 }
 
 /* to log error messages */
@@ -109,14 +133,29 @@ FILE *fp_err;
 
 int ErrMsg(char *fmt, ...)
 {
+#ifdef UTF8
+	va_list ap;
+	int error;
+        char orig_buf[ICONV_BUFSIZE];
+        char buf[ICONV_BUFSIZE];
+
+	va_start( ap, fmt );
+	error = vsprintf( orig_buf, fmt, ap );
+	va_end( ap );
+	eucjp_to_utf8( orig_buf, buf );
+	fputs( buf, fp_err );
+	fflush( fp_err );
+	return( error );
+#else
 	va_list ap;
 	int error;
 
 	va_start( ap, fmt );
 	error = vfprintf( fp_err, fmt, ap );
-	fflush( fp_err );
 	va_end( ap );
+	fflush( fp_err );
 	return( error );
+#endif
 }
 
 char* malloc_char( char* str, char *str_name )

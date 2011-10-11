@@ -1,3 +1,6 @@
+set Log = CONSOLE
+set Err = CONSOLE
+set Log.chasen = YES
 set Speak.syncinterval = 500
 prop Speak.stat = AutoOutput
 set Text = 123456789
