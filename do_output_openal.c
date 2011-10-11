@@ -143,12 +143,16 @@ void output_speaker_thread(int *t)
     if (da_stopping == 1) {
       da_stopping = 0;
       talked_DA_msec = -1;
+      strcpy( slot_Speak_stat, "IDLE" );
+      if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
       return;
     }
     nout += SIZE;
   }
   sndout(total - nout, &wave.data[nout]);
   //printf("output_speaker_thread() done.\n");  fflush(stdout);
+  strcpy( slot_Speak_stat, "IDLE" );
+  if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
 }
 
 void do_output(char *fn)

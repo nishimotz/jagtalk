@@ -542,6 +542,8 @@ void setRun( char *rel, char *val )
 	} else if( strcmp(val,"LIVE")==0 )  {
 		strcpy( slot_Run, "LIVE" );
 		if( prop_Run == AutoOutput )  inqRun();
+	} else if( strcmp(val,"SLEEP")==0 )  {
+	        sleep(5);
 	} else {
 		unknown_com();
 	}
