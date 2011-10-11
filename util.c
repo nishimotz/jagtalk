@@ -3,6 +3,7 @@
 /*   All rights reserved                    */
 /*                                          */
 /* $Id: util.c,v 1.15 2009/02/12 17:43:42 sako Exp $                                     */
+/* UTF-8 support by Takuya Nishimoto (nishimotz.com) */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,10 +19,10 @@
 void restart(int);
 int ByteSwap( void *, int, int);
 
-/*******¢­for server mode *******/
+/*******â†“for server mode *******/
 int server_send ( char *message );
 extern int s_mode;
-/*******¢¬***********************/
+/*******â†‘***********************/
 
 /* to report messages to Control Unit */
 
@@ -51,7 +52,7 @@ int RepMsg(char *fmt, ...)
 	fflush( stdout );
 	va_end( ap );
 # endif	
-	/*******¢­for server mode *******/
+	/*******â†“for server mode *******/
 	if ( s_mode ) {
 	        char *chrMsg;
 		
@@ -69,7 +70,7 @@ int RepMsg(char *fmt, ...)
 			free(chrMsg);
 	        }
 	}
-	/*******¢¬***********************/
+	/*******â†‘***********************/
 	
 	return( error );
 }
@@ -131,8 +132,8 @@ char* malloc_char( char* str, char *str_name )
 	return p;
 }
 
-/* ¹çÀ®²»À¼¥Ç¡¼¥¿¤Î½ñ¤­½Ğ¤·¤Ë»È¤¦¡£ */
-/* BIG ENDIAN ¤Ç¤Î½ñ¤­½Ğ¤·¤ò¹Ô¤¦¡£¤â¤È¤Î¥á¥â¥êÆâÍÆ¤ÏÊİÂ¸¤·¤Æ¤ª¤¯¡£ */
+/* åˆæˆéŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãå‡ºã—ã«ä½¿ã†ã€‚ */
+/* BIG ENDIAN ã§ã®æ›¸ãå‡ºã—ã‚’è¡Œã†ã€‚ã‚‚ã¨ã®ãƒ¡ãƒ¢ãƒªå†…å®¹ã¯ä¿å­˜ã—ã¦ãŠãã€‚ */
 int xfwrite(void *p, int size, int num, FILE *fp){
 	int block;
 	void *tmp;
@@ -159,8 +160,8 @@ int xfwrite(void *p, int size, int num, FILE *fp){
 	return block;
 }
 
-/* ¹çÀ®²»À¼¥Ç¡¼¥¿¤Î½ñ¤­½Ğ¤·¤Ë»È¤¦¡£ */
-/* LITTLE ENDIAN ¤Ç¤Î½ñ¤­½Ğ¤·¤ò¹Ô¤¦¡£¤â¤È¤Î¥á¥â¥êÆâÍÆ¤ÏÊİÂ¸¤·¤Æ¤ª¤¯¡£ */
+/* åˆæˆéŸ³å£°ãƒ‡ãƒ¼ã‚¿ã®æ›¸ãå‡ºã—ã«ä½¿ã†ã€‚ */
+/* LITTLE ENDIAN ã§ã®æ›¸ãå‡ºã—ã‚’è¡Œã†ã€‚ã‚‚ã¨ã®ãƒ¡ãƒ¢ãƒªå†…å®¹ã¯ä¿å­˜ã—ã¦ãŠãã€‚ */
 int xfwrite_LE(void *p, int size, int num, FILE *fp){
 	int block;
 	void *tmp;
