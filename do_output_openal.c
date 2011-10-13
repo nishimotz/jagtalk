@@ -23,67 +23,6 @@ static ALCdevice *device = NULL;
 static ALCcontext *context = NULL;
 static ALuint buffer = 0, source = 0;
 
-/* timer */
-static struct timeval tv;
-static struct timezone tz;
-static int start_DA_sec = 0;
-static int start_DA_usec = 0;
-
-void set_start_da_time()
-{
-  gettimeofday( &tv, &tz );
-  start_DA_sec = (int)tv.tv_sec;
-  start_DA_usec = (int)tv.tv_usec;
-}
-
-void update_talked_da_msec()
-{
-  gettimeofday( &tv, &tz );
-  talked_DA_msec = (tv.tv_sec - start_DA_sec) * 1000 + (tv.tv_usec - start_DA_usec) / 1000.0;
-}
-
-/* output stopping flag */
-static int da_stopping = 0;
-
-/* functions */
-void set_da_signal() 
-{
-}
-
-void sndout(int	leng, short *out)
-{
-  ALint state;
-  int prev_msec, next_sync_msec;
-  //printf("sndout(%d)\n", leng);  fflush(stdout);
-  alBufferData(buffer, AL_FORMAT_MONO16, 
-	       out, sizeof(short) * leng, wave.rate);
-  alGenSources(1, &source);
-  alSourcei(source, AL_BUFFER, buffer);
-  alSourcePlay(source);
-  update_talked_da_msec();
-  prev_msec = talked_DA_msec;
-  if (slot_Speak_syncinterval > 0) {
-    next_sync_msec = slot_Speak_syncinterval;
-  }
-  while (alGetSourcei(source, AL_SOURCE_STATE, &state), state != AL_STOPPED) {
-    usleep(1000); // 1msec
-    update_talked_da_msec();
-    if (da_stopping == 1) {
-      alSourceStop(source);
-      if (prop_Speak_len == AutoOutput)  inqSpeakLen();
-      if (prop_Speak_utt == AutoOutput)  inqSpeakUtt();
-      reset_audiodev();
-      return;
-    }
-    if (slot_Speak_syncinterval > 0) {
-      if (next_sync_msec < talked_DA_msec) {
-	RepMsg("tell Speak.sync = %d\n", talked_DA_msec);
-	next_sync_msec += slot_Speak_syncinterval;
-      }
-    }
-  }
-}
-
 void init_audiodev()
 {
   /* OpenAL */
@@ -119,13 +58,78 @@ void reset_output()
   reset_audiodev();
 }
 
+/* timer */
+static struct timeval tv;
+// static struct timezone tz;
+static time_t start_DA_sec = 0;
+static suseconds_t start_DA_usec = 0;
+
+void set_start_da_time()
+{
+  gettimeofday( &tv, NULL );
+  start_DA_sec = tv.tv_sec;
+  start_DA_usec = tv.tv_usec;
+}
+
+void update_talked_da_msec()
+{
+  gettimeofday( &tv, NULL );
+  talked_DA_msec = (tv.tv_sec - start_DA_sec) * 1000 + (tv.tv_usec - start_DA_usec) / 1000;
+}
+
+/* output stopping flag */
+static int da_stopping = 0;
+
+/* functions */
+void set_da_signal() 
+{
+}
+
+void sndout(int	leng, short *out)
+{
+  ALint state;
+  int prev_msec, next_sync_msec;
+  //printf("sndout(%d)\n", leng);  fflush(stdout);
+  alBufferData(buffer, AL_FORMAT_MONO16, 
+	       out, sizeof(short) * leng, wave.rate);
+  alGenSources(1, &source);
+  alSourcei(source, AL_BUFFER, buffer);
+  alSourcePlay(source);
+  update_talked_da_msec();
+  prev_msec = talked_DA_msec;
+  if (slot_Speak_syncinterval > 0) {
+    next_sync_msec = slot_Speak_syncinterval;
+  }
+  while (alGetSourcei(source, AL_SOURCE_STATE, &state), state != AL_STOPPED) {
+    usleep(1000); // 1msec
+    update_talked_da_msec();
+    if (da_stopping == 1) {
+      alSourceStop(source);
+      //if (prop_Speak_len == AutoOutput)  inqSpeakLen();
+      //if (prop_Speak_utt == AutoOutput)  inqSpeakUtt();
+      //reset_audiodev();
+      return;
+    }
+    if (slot_Speak_syncinterval > 0) {
+      if (next_sync_msec < talked_DA_msec) {
+	RepMsg("tell Speak.sync = %d\n", talked_DA_msec);
+	next_sync_msec += slot_Speak_syncinterval;
+      }
+    }
+  }
+}
+
 static pthread_t thread;
 
 void output_speaker_cleanup(void *dummy)
 {
-  reset_output();
+  update_talked_da_msec();
+  if (prop_Speak_len == AutoOutput)  inqSpeakLen();
   strcpy(slot_Speak_stat, "IDLE");
   if (prop_Speak_stat == AutoOutput)  inqSpeakStat();
+  // talked_DA_msec = -1;
+  already_talked = 0;
+  reset_output();
 }
 
 void output_speaker_thread(int *t)
@@ -142,17 +146,16 @@ void output_speaker_thread(int *t)
     sndout(SIZE,&wave.data[nout]);
     if (da_stopping == 1) {
       da_stopping = 0;
-      talked_DA_msec = -1;
-      strcpy( slot_Speak_stat, "IDLE" );
-      if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
+      output_speaker_cleanup(NULL);
       return;
     }
     nout += SIZE;
   }
   sndout(total - nout, &wave.data[nout]);
   //printf("output_speaker_thread() done.\n");  fflush(stdout);
-  strcpy( slot_Speak_stat, "IDLE" );
-  if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
+  output_speaker_cleanup(NULL);
+  //strcpy( slot_Speak_stat, "IDLE" );
+  //if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
 }
 
 void do_output(char *fn)
@@ -179,5 +182,7 @@ void do_output(char *fn)
 void abort_output()
 {
   //printf("abort_output()\n");  fflush(stdout);
-  da_stopping = 1;
+  if (already_talked == 1) {
+    da_stopping = 1;
+  }
 }
