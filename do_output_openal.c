@@ -134,6 +134,7 @@ void output_speaker_cleanup(void *dummy)
 
 void output_speaker_thread(int *t)
 {
+#if 0
   static int total;
   static int nout;
   
@@ -152,10 +153,18 @@ void output_speaker_thread(int *t)
     nout += SIZE;
   }
   sndout(total - nout, &wave.data[nout]);
-  //printf("output_speaker_thread() done.\n");  fflush(stdout);
+#else
+  static int total;
+  
+  total = *t;
+  init_output();
+  set_start_da_time();
+  sndout(total, wave.data);
+  if (da_stopping == 1) {
+    da_stopping = 0;
+  }
+#endif
   output_speaker_cleanup(NULL);
-  //strcpy( slot_Speak_stat, "IDLE" );
-  //if ( prop_Speak_stat == AutoOutput )  inqSpeakStat();
 }
 
 void do_output(char *fn)
